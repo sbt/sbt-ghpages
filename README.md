@@ -25,6 +25,7 @@ Once this is done, you can begin using the plugin.
 
 Create a `project/plugins.sbt` file that looks like the following:
 
+    resolvers += "jgit-repo" at "http://download.eclipse.org/jgit/maven"
 
     addSbtPlugin("com.jsuereth" % "sbt-ghpages-plugin" % "0.4.0")
 
