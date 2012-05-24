@@ -38,8 +38,6 @@ object GhPages extends Plugin {
     private def synchLocal0 = (privateMappings, updatedRepository, GitKeys.gitRunner, streams) map { (mappings, repo, git, s) =>
       // TODO - an sbt.Synch with cache of previous mappings to make this more efficient. */
       val betterMappings = mappings map { case (file, target) => (file, repo / target) }
-      // First, remove 'stale' files.
-      cleanSiteForRealz(repo, git, s)
       // Now copy files.
       IO.copy(betterMappings)
       repo
