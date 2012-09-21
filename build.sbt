@@ -1,15 +1,15 @@
 sbtPlugin := true
 
-// This should be tied to sbtPlugin IMHO.
-publishMavenStyle := false
+name := "sbt-ghpages"
 
-name := "sbt-ghpages-plugin"
+organization := "com.typesafe.sbt"
 
-organization := "com.jsuereth"
-
-version := "0.5.0"
-
-publishTo := Some(Resolver.url("sbt-plugin-releases", new URL("http://scalasbt.artifactoryonline.com/scalasbt/sbt-plugin-releases/"))(Resolver.ivyStylePatterns))
+version := "0.5.0-SNAPSHOT"
 
 publishMavenStyle := false
 
+publishTo <<= (version) { v =>
+  def scalasbt(repo: String) = ("scalasbt " + repo, "http://scalasbt.artifactoryonline.com/scalasbt/sbt-plugin-" + repo)
+  val (name, repo) = if (v.endsWith("-SNAPSHOT")) scalasbt("snapshots") else scalasbt("releases")
+  Some(Resolver.url(name, url(repo))(Resolver.ivyStylePatterns))
+}

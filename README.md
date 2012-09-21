@@ -1,8 +1,11 @@
-# xsbt-ghpages-plugin #
+# sbt-ghpages #
 
-The github pages plugin for SBT provides support for auto-generating a project website and pushing to github pages.
+The github pages plugin for sbt provides support for auto-generating a project
+website and pushing to github pages.
 
-Please see the [sbt-site-plugin](http://github.com/sbt/sbt-site-plugin) for information on how you can customize the generation of a project website.
+Please see the [sbt-site plugin](http://github.com/sbt/sbt-site) for information
+on how you can customize the generation of a project website.
+
 
 ## Creating ghpages branch ##
 
@@ -21,28 +24,29 @@ To use this pluign, you must first create a ghpages branch on github.  To do so:
 
 Once this is done, you can begin using the plugin.
 
+
 ## Adding to your project ##
 
 Create a `project/plugins.sbt` file that looks like the following:
 
     resolvers += "jgit-repo" at "http://download.eclipse.org/jgit/maven"
 
-    addSbtPlugin("com.jsuereth" % "sbt-ghpages-plugin" % "0.4.0")
+    addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.5.0")
 
 
 Then in your build.sbt file, simply add:
 
-
     site.settings
 
     ghpages.settings
-    
+
     git.remoteRepo := "git@github.com:{your username}/{your project}.git"
 
 
 ## Pushing your project ##
 
 Simply run the `ghpages-push-site` task to publish your website.
+
 
 ## LICENSE ##
 
@@ -73,4 +77,4 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 Note:
-This plugin is adapted from the SBT 0.10.x source code for general usage among projects.
+This plugin is adapted from the sbt 0.10.x source code for general usage among projects.

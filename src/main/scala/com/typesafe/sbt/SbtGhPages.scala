@@ -1,23 +1,28 @@
-package com.jsuereth.ghpages
+package com.typesafe.sbt
 
 import sbt._
 import Keys._
-import com.jsuereth.git.{GitKeys,GitRunner}
+import com.typesafe.sbt.SbtGit.GitKeys
+import com.typesafe.sbt.git.GitRunner
 import GitKeys.{gitBranch, gitRemoteRepo}
-import com.jsuereth.sbtsite.SiteKeys.siteMappings
+import com.typesafe.sbt.SbtSite.SiteKeys.siteMappings
 
 // Plugin to make use of githup pages.
-object GhPages extends Plugin {
-  // TODO - Add some sort of locking to the repository so only one thread accesses it at a time...
-  object ghpages {
+object SbtGhPages extends Plugin {
+  object GhPagesKeys {
     lazy val repository = SettingKey[File]("ghpages-repository", "sandbox environment where git project ghpages branch is checked out.")
     lazy val ghpagesNoJekyll = SettingKey[Boolean]("ghpages-no-jekyll", "If this flag is set, ghpages will automatically generate a .nojekyll file to prevent github from running jekyll on pushed sites.")
     lazy val updatedRepository = TaskKey[File]("ghpages-updated-repository", "Updates the local ghpages branch on the sandbox repository.")
-    // Note:  These are *only* here in the event someone wants to completely bypass the sbt-site-plugin.
+    // Note:  These are *only* here in the event someone wants to completely bypass the sbt-site plugin.
     lazy val privateMappings = mappings in synchLocal
     lazy val synchLocal = TaskKey[File]("ghpages-synch-local", "Copies the locally generated site into the local ghpages repository.")
     lazy val cleanSite = TaskKey[Unit]("ghpages-clean-site", "Cleans the staged repository for ghpages branch.")
     lazy val pushSite = TaskKey[Unit]("ghpages-push-site", "Pushes a generated site into the ghpages branch.  Will not clean the branch unless you run clean-site first.")
+  }
+
+  // TODO - Add some sort of locking to the repository so only one thread accesses it at a time...
+  object ghpages {
+    import GhPagesKeys._
 
     // TODO - Should we wire into default settings?
     lazy val settings: Seq[Setting[_]] = Seq(
@@ -32,9 +37,9 @@ object GhPages extends Plugin {
       cleanSite <<= cleanSite0
     )
     private def updatedRepo(repo: SettingKey[File], remote: SettingKey[String], branch: SettingKey[Option[String]]) =
-       (repo, remote, branch, GitKeys.gitRunner, streams) map { (local, uri, branch, git, s) => 
-         git.updated(remote = uri, cwd = local, branch = branch, log = s.log); 
-         local 
+       (repo, remote, branch, GitKeys.gitRunner, streams) map { (local, uri, branch, git, s) =>
+         git.updated(remote = uri, cwd = local, branch = branch, log = s.log);
+         local
     }
 
     private def synchLocal0 = (privateMappings, updatedRepository, ghpagesNoJekyll, GitKeys.gitRunner, streams) map { (mappings, repo, noJekyll, git, s) =>
