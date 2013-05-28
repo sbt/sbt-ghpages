@@ -62,7 +62,9 @@ object SbtGhPages extends Plugin {
         git(("rm" :: "-r" :: "-f" :: "--ignore-unmatch" :: toClean) :_*)(dir, s.log)
       ()
     }
-    private def pushSite0 = (synchLocal, GitKeys.gitRunner, streams) map { (repo, git, s) => git.commitAndPush("updated site")(repo, s.log) }
+
+    val commitMessage = sys.env.getOrElse("SBT_GHPAGES_COMMIT_MESSAGE", "updated site")
+    private def pushSite0 = (synchLocal, GitKeys.gitRunner, streams) map { (repo, git, s) => git.commitAndPush(commitMessage)(repo, s.log) }
 
 
     /** TODO - Create ghpages in the first place if it doesn't exist.
