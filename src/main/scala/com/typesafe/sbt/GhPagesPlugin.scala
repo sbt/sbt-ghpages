@@ -5,13 +5,20 @@ import Keys._
 import com.typesafe.sbt.SbtGit.GitKeys
 import com.typesafe.sbt.git.GitRunner
 import GitKeys.{gitBranch, gitRemoteRepo}
-import com.typesafe.sbt.SbtSite.SiteKeys.siteMappings
+import com.typesafe.sbt.site.SitePlugin
 
-// Plugin to make use of githup pages.
-object SbtGhPages extends Plugin {
+// Plugin to make use of github pages.
+object GhPagesPlugin extends AutoPlugin {
+
+  override val trigger: PluginTrigger = noTrigger
+
+  override val  requires: Plugins = SitePlugin && GhPagesPlugin
+
+  override lazy val  projectSettings: Seq[Setting[_]] = ghPagesProjectSettings
+
   object GhPagesKeys {
     lazy val repository = SettingKey[File]("ghpages-repository", "sandbox environment where git project ghpages branch is checked out.")
-    lazy val ghpagesNoJekyll = SettingKey[Boolean]("ghpages-no-jekyll", "If this flag is set, ghpages will automatically generate a .nojekyll file to prevent github from running jekyll on pushed sites.")
+    lazy val noJekyll = SettingKey[Boolean]("ghpages-no-jekyll", "If this flag is set, ghpages will automatically generate a .nojekyll file to prevent github from running jekyll on pushed sites.")
     lazy val updatedRepository = TaskKey[File]("ghpages-updated-repository", "Updates the local ghpages branch on the sandbox repository.")
     // Note:  These are *only* here in the event someone wants to completely bypass the sbt-site plugin.
     lazy val privateMappings = mappings in synchLocal
@@ -20,14 +27,17 @@ object SbtGhPages extends Plugin {
     lazy val pushSite = TaskKey[Unit]("ghpages-push-site", "Pushes a generated site into the ghpages branch.  Will not clean the branch unless you run clean-site first.")
   }
 
+
+  object autoImport {
+    val GhPages = GhPagesKeys // make it easy for users to use  ghpages keys in .sbt files with GhPages.<key> syntax
+  }
+
   // TODO - Add some sort of locking to the repository so only one thread accesses it at a time...
-  object ghpages {
     import GhPagesKeys._
 
-    // TODO - Should we wire into default settings?
-    lazy val settings: Seq[Setting[_]] = Seq(
+    def ghPagesProjectSettings: Seq[Setting[_]] = Seq(
       //example: gitRemoteRepo := "git@github.com:jsuereth/scala-arm.git",
-      ghpagesNoJekyll := true,
+      noJekyll := true,
       repository := {
         val buildHash: String =
           Hash.toHex(Hash.apply(sbt.Keys.thisProjectRef.value.build.toASCIIString))
@@ -36,7 +46,7 @@ object SbtGhPages extends Plugin {
       gitBranch in updatedRepository <<= gitBranch ?? Some("gh-pages"),
       updatedRepository <<= updatedRepo(repository, gitRemoteRepo, gitBranch in updatedRepository),
       pushSite <<= pushSite0,
-      privateMappings <<= siteMappings,
+      privateMappings <<= mappings in SitePlugin.autoImport.makeSite,
       synchLocal <<= synchLocal0,
       cleanSite <<= cleanSite0
     )
@@ -46,7 +56,7 @@ object SbtGhPages extends Plugin {
          local
     }
 
-    private def synchLocal0 = (privateMappings, updatedRepository, ghpagesNoJekyll, GitKeys.gitRunner, streams) map { (mappings, repo, noJekyll, git, s) =>
+    private def synchLocal0 = (privateMappings, updatedRepository, noJekyll, GitKeys.gitRunner, streams) map { (mappings, repo, noJekyll, git, s) =>
       // TODO - an sbt.Synch with cache of previous mappings to make this more efficient. */
       val betterMappings = mappings map { case (file, target) => (file, repo / target) }
       // First, remove 'stale' files.
@@ -72,15 +82,14 @@ object SbtGhPages extends Plugin {
 
 
     /** TODO - Create ghpages in the first place if it doesn't exist.
-        $ cd /path/to/fancypants
-        $ git symbolic-ref HEAD refs/heads/gh-pages
-        $ rm .git/index
-        $ git clean -fdx
-        <copy api and documentation>
-        $ echo "My GitHub Page" > index.html
-        $ git add .
-        $ git commit -a -m "First pages commit"
-        $ git push origin gh-pages
+        *$ cd /path/to/fancypants
+        *$ git symbolic-ref HEAD refs/heads/gh-pages
+        *$ rm .git/index
+        *$ git clean -fdx
+        *<copy api and documentation>
+        *$ echo "My GitHub Page" > index.html
+        *$ git add .
+        *$ git commit -a -m "First pages commit"
+        *$ git push origin gh-pages
      */
-  }
 }
