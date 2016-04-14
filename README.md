@@ -18,21 +18,30 @@ the web with GitHub Pages where it will be served at
 
 ## Adding the plugin to your project ##
 
+*Note, sbt-ghpages now requires the use of sbt version 0.13.5 or greater.*
+
 Create a `project/plugins.sbt` file that looks like the following:
 
 ```scala
-resolvers += "jgit-repo" at "http://download.eclipse.org/jgit/maven"
-
 addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.5.4")
 ```
 
-Then in your `build.sbt` file, simply add:
+Then in your `build.sbt` file, simply enable the GhPagesPlugin via an
+`enablePlugins` statement for your project, and specify the location of
+your github repository (for more information on enabling and disabling sbt plugins,
+see the [sbt plugin documentation](http://www.scala-sbt.org/0.13/docs/Using-Plugins.html#Enabling+and+disabling+auto+plugins)):
 
 ```scala
-ghpages.settings
+enablePlugins(GhPagesPlugin)
 
 git.remoteRepo := "git@github.com:{your username}/{your project}.git"
 ```
+### Settings
+
+sbt-ghpages provides the following optional setting keys for use in your `build.sbt` file:
+
+- `GhPages.repository` - Location of the sandbox repository to be used to check out the gh-pages branch.
+- `GhPages.noJekyll` - If set to true will cause a .nojekyll file to be generated, to prevent GitHub from running Jekyll on pushed sites.
 
 
 ## Initializing the gh-pages branch ##
@@ -72,9 +81,10 @@ Simply run the `ghpagesPushSite` task to publish your website.
 ### How it works
 
 Behind the scenes, `sbt-ghpages` will create a new "sandbox" clone of your Git
-repository, stashed away beneath `~/.sbt/ghpages`. Whenever you run `sbt
-ghpagesPushSite` it will copy your site content into that sandbox repository,
-commit it to the `gh-pages` branch, and push the branch to GitHub.
+repository, with its location determined by the `GhPages.repository` setting key
+(by default set to a directory under `~/.sbt/ghpages`). Whenever you run `sbt ghpagesPushSite`
+it will copy your site content into that sandbox repository, commit it to the
+`gh-pages` branch, and push the branch to GitHub.
 
 The sandbox repo approach spares you from doing the `gh-pages` checkout/commit
 dance yourself each time you update your site content, while avoiding any
@@ -84,11 +94,12 @@ mistakes with dirty or untracked files in your normal working copy clone.
 ## Publishing Scaladoc
 
 A common use for `sbt-ghpages` is to automate the publishing of Scaladoc. If you wish to
-use it for this, first ask `sbt-site` to generate your Scaladoc by adding this
-setting to your `build.sbt`:
+use it for this, first ask `sbt-site` to generate your Scaladoc by adding an `enablePlugins` directive
+for the `SiteScaladocPlugin` (included in sbt-site) to your `build.sbt` see the
+[sbt-site documentation](https://github.com/sbt/sbt-site#scaladoc-apis) for more information:
 
 ```scala
-site.includeScaladoc()
+enablePlugins(SiteScaladocPlugin)
 ```
 
 After using `ghpagesPushSite` you should find your Scaladoc at:

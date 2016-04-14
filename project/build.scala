@@ -6,6 +6,6 @@ object ghpages extends Build {
      resolvers += Resolver.url("scalasbt", new URL("http://scalasbt.artifactoryonline.com/scalasbt/sbt-plugin-releases"))(Resolver.ivyStylePatterns),
      resolvers += "jgit-repo" at "http://download.eclipse.org/jgit/maven",
      addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "0.8.5"),
-     addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "0.8.1")
+     addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "1.0.0")
   )
 }
