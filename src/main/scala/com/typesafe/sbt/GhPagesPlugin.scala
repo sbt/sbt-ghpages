@@ -12,7 +12,7 @@ object GhPagesPlugin extends AutoPlugin {
 
   override val trigger: PluginTrigger = noTrigger
 
-  override val  requires: Plugins = SitePlugin && GhPagesPlugin
+  override val  requires: Plugins = SitePlugin && GitPlugin
 
   override lazy val  projectSettings: Seq[Setting[_]] = ghPagesProjectSettings
 
