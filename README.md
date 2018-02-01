@@ -154,6 +154,16 @@ sbt-ghpages will only delete files which are matched by the FileFilter specified
 For example, to prevent sbt-ghpages from deleting the "CNAME" file located at the root of your site, and any file
 named "versions.html", add the following to your build.sbt:
 
+## Maintaining Old Versions
+By setting just `ghpagesKeepVersions` flag, you can maintain history of all your old and current versions of site/documents.
+Behind the scenes, this flag plays two important roles:
+1. Set's the `includeFilter in ghpagesCleanSite` to include all the files from current versions. 
+    (That means, if you publish same version again, old content from that version will be replaced by new content)
+2. While publishing site to gh-pages, new directory with current version's name is created and all the site contents will be
+    copied to that directory
+    
+Avoid setting `includeFilter in ghpagesCleanSite` explicitly to protect old files as this is set by plugin to protect files when `ghpagesKeepVersions := true`
+
 ```scala
 excludeFilter in ghpagesCleanSite :=
   new FileFilter{
