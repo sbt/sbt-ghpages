@@ -1,6 +1,5 @@
 language: scala
 sudo: false
-dist: precise
 cache:
   directories:
   - $HOME/.ivy2/cache
@@ -12,7 +11,7 @@ script:
 - sbt "^^ ${SBT_VERSION}" scripted
 matrix:
   include:
-  - jdk: oraclejdk7
+  - jdk: openjdk7
     env: SBT_VERSION="0.13.17"
   - jdk: oraclejdk8
     env: SBT_VERSION="1.1.6"
