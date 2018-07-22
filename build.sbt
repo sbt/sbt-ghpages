@@ -1,6 +1,7 @@
 lazy val root = (project in file("."))
   .settings(
     ScriptedPlugin.scriptedSettings,
+    scriptedBufferLog := false,
     scriptedLaunchOpts += ("-Dplugin.version=" + version.value),
     scriptedLaunchOpts ++= sys.process.javaVmArguments.filter(
       a => Seq("-Xmx", "-Xms", "-XX", "-Dsbt.log.noformat").exists(a.startsWith)
