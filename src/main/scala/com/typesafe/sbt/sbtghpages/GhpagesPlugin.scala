@@ -2,11 +2,12 @@ package com.typesafe.sbt
 package sbtghpages
 
 import sbt.{FileFilter, _}
-import Keys._
+import Keys.{mappings, _}
 import com.typesafe.sbt.SbtGit.GitKeys
 import com.typesafe.sbt.git.GitRunner
 import GitKeys.{gitBranch, gitRemoteRepo}
 import com.typesafe.sbt.site.SitePlugin
+
 import scala.util.control.NonFatal
 
 // Plugin to make use of github pages.
@@ -17,6 +18,7 @@ object GhpagesPlugin extends AutoPlugin {
   override lazy val projectSettings: Seq[Setting[_]] = ghpagesProjectSettings
 
   object autoImport extends GhpagesKeys
+
   import autoImport._
 
   // TODO - Add some sort of locking to the repository so only one thread accesses it at a time...
@@ -38,12 +40,20 @@ object GhpagesPlugin extends AutoPlugin {
     gitBranch in ghpagesUpdatedRepository := gitBranch.?.value getOrElse Some(ghpagesBranch.value),
     ghpagesUpdatedRepository := updatedRepo(ghpagesRepository, gitRemoteRepo, gitBranch in ghpagesUpdatedRepository).value,
     ghpagesPushSite := pushSiteTask.value,
-    ghpagesPrivateMappings := (mappings in SitePlugin.autoImport.makeSite).value,
+    ghpagesPrivateMappings := ghpagesPrivateMappingsTask.value,
     ghpagesSynchLocal := synchLocalTask.value,
     ghpagesCleanSite := cleanSiteTask.value,
     includeFilter in ghpagesCleanSite := includeFilterInCleanSiteTask.value,
     excludeFilter in ghpagesCleanSite := NothingFilter
   )
+
+  private def ghpagesPrivateMappingsTask = Def.task {
+    val makeSiteMappings = (mappings in SitePlugin.autoImport.makeSite).value
+    val updatedMappings =
+      if (ghpagesKeepVersions.value) makeSiteMappings map { case (file, target) => (file, version.value + "/" + target) }
+      else makeSiteMappings
+    updatedMappings
+  }
 
   private def includeFilterInCleanSiteTask =
     Def.setting {
@@ -51,7 +61,7 @@ object GhpagesPlugin extends AutoPlugin {
         override def accept(pathname: File): Boolean = pathname.getAbsolutePath.contains(s"/${version.value}")
       }
       else AllPassFilter
-  }
+    }
 
   private def updatedRepo(repo: SettingKey[File], remote: SettingKey[String], branch: SettingKey[Option[String]]) =
     Def.task {
@@ -70,13 +80,12 @@ object GhpagesPlugin extends AutoPlugin {
       val incl = (includeFilter in ghpagesCleanSite).value
       val excl = (excludeFilter in ghpagesCleanSite).value
       // TODO - an sbt.Synch with cache of previous mappings to make this more efficient. */
-      val betterMappings = if (ghpagesKeepVersions.value) mappings map { case (file, target) => (file, repo / version.value / target) }
-      else mappings map { case (file, target) => (file, repo / target) }
+      val betterMappings = mappings map { case (file, target) => (file, repo / target) }
       // First, remove 'stale' files.
       cleanSiteForRealz(repo, GitKeys.gitRunner.value, s, incl, excl)
       // Now copy files.
       IO.copy(betterMappings)
-      if(ghpagesNoJekyll.value) IO.touch(repo / ".nojekyll")
+      if (ghpagesNoJekyll.value) IO.touch(repo / ".nojekyll")
       repo
     }
 
@@ -84,11 +93,12 @@ object GhpagesPlugin extends AutoPlugin {
     Def.task {
       cleanSiteForRealz(ghpagesUpdatedRepository.value, GitKeys.gitRunner.value, streams.value, (includeFilter in ghpagesCleanSite).value, (excludeFilter in ghpagesCleanSite).value)
     }
+
   private def cleanSiteForRealz(dir: File, git: GitRunner, s: TaskStreams, incl: FileFilter, excl: FileFilter): Unit = {
     val toClean = IO.listFiles(dir)
-        .filter(f ⇒ f.getName != ".git" && incl.accept(f) && !excl.accept(f)).map(_.getAbsolutePath).toList
-    if(!toClean.isEmpty)
-      git(("rm" :: "-r" :: "-f" :: "--ignore-unmatch" :: toClean) :_*)(dir, s.log)
+      .filter(f ⇒ f.getName != ".git" && incl.accept(f) && !excl.accept(f)).map(_.getAbsolutePath).toList
+    if (!toClean.isEmpty)
+      git("rm" :: "-r" :: "-f" :: "--ignore-unmatch" :: toClean: _*)(dir, s.log)
     ()
   }
 
@@ -111,14 +121,14 @@ object GhpagesPlugin extends AutoPlugin {
     }
 
   /** TODO - Create ghpages in the first place if it doesn't exist.
-      *$ cd /path/to/fancypants
-      *$ git symbolic-ref HEAD refs/heads/gh-pages
-      *$ rm .git/index
-      *$ git clean -fdx
-      *<copy api and documentation>
-      *$ echo "My GitHub Page" > index.html
-      *$ git add .
-      *$ git commit -a -m "First pages commit"
-      *$ git push origin gh-pages
+   * $ cd /path/to/fancypants
+   * $ git symbolic-ref HEAD refs/heads/gh-pages
+   * $ rm .git/index
+   * $ git clean -fdx
+   * <copy api and documentation>
+   * $ echo "My GitHub Page" > index.html
+   * $ git add .
+   * $ git commit -a -m "First pages commit"
+   * $ git push origin gh-pages
    */
 }
