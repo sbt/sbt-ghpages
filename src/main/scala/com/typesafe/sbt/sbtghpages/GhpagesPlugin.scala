@@ -7,6 +7,7 @@ import com.typesafe.sbt.SbtGit.GitKeys
 import com.typesafe.sbt.git.GitRunner
 import GitKeys.{gitBranch, gitRemoteRepo}
 import com.typesafe.sbt.site.SitePlugin
+import scala.util.control.NonFatal
 
 // Plugin to make use of github pages.
 object GhpagesPlugin extends AutoPlugin {
@@ -28,6 +29,7 @@ object GhpagesPlugin extends AutoPlugin {
 
   def ghpagesProjectSettings: Seq[Setting[_]] = Seq(
     //example: gitRemoteRepo := "git@github.com:jsuereth/scala-arm.git",
+    ghpagesCommitOptions := Seq("-m", commitMessage),
     ghpagesRepository := {
       val buildHash: String =
         Hash.toHex(Hash.apply(sbt.Keys.thisProjectRef.value.build.toASCIIString))
@@ -90,14 +92,22 @@ object GhpagesPlugin extends AutoPlugin {
     ()
   }
 
-  val commitMessage = sys.env.getOrElse("SBT_GHPAGES_COMMIT_MESSAGE", "updated site")
+  lazy val commitMessage = sys.env.getOrElse("SBT_GHPAGES_COMMIT_MESSAGE", "updated site")
 
   private def pushSiteTask =
     Def.task {
       val git = GitKeys.gitRunner.value
       val repo = ghpagesSynchLocal.value
-      val s = streams.value
-      git.commitAndPush(commitMessage)(repo, s.log)
+      val s = streams.value.log
+      git("add", ".")(repo, s)
+      try {
+        val commit = "commit" +: ghpagesCommitOptions.value
+        git(commit: _*)(repo, s)
+      } catch {
+        case NonFatal(e) =>
+          s.info(e.toString)
+      }
+      git.push(repo, s)
     }
 
   /** TODO - Create ghpages in the first place if it doesn't exist.
