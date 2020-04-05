@@ -8,25 +8,33 @@ $ must-mirror target/ghpages/1.0.0/hello.html expected/hello.html
 # Verify files does not get generated at top level
 -$ must-mirror target/ghpages/hello.html expected/hello.html
 
+#######################################################################################
+# Test that SNAPSHOT versions always gets generated in version number directory (ghpagesKeepVersions = true)
+# even when ghpagesCopyLatestVersionAtRoot is true
+#######################################################################################
+> 'set version := "2.0.0-SNAPSHOT"'
+> 'set ghpagesCopyLatestVersionAtRoot := true'
+> ghpagesSynchLocal
+
+# Verify files get generated in 2.0.0-SNAPSHOT folder
+$ must-mirror target/ghpages/2.0.0-SNAPSHOT/hello.html expected/hello.html
+-$ must-mirror target/ghpages/hello.html expected/hello.html
+
+# Verify existing versions are preserved
+$ must-mirror target/ghpages/1.0.0/hello.html expected/hello.html
+
+#######################################################################################
+# Test that site is generated in version number directory (ghpagesKeepVersions = true)
+# as well as at root directory (ghpagesCopyLatestVersionAtRoot = true)
+#######################################################################################
 > 'set version := "2.0.0"'
+> 'set ghpagesCopyLatestVersionAtRoot := true'
 > ghpagesSynchLocal
 
 # Verify files get generated in 2.0.0 folder
 $ must-mirror target/ghpages/2.0.0/hello.html expected/hello.html
-
-# Verify existing versions are preserved
-$ must-mirror target/ghpages/1.0.0/hello.html expected/hello.html
-
-#######################################################################################
-# Test that site is generated in top level directory (ghpagesKeepVersions = false)
-#######################################################################################
-> 'set version := "3.0.0"'
-> 'set ghpagesKeepVersions := false'
-> ghpagesSynchLocal
-
-# Verify files get generated in top level folder when ghpagesKeepVersions flag is false
 $ must-mirror target/ghpages/hello.html expected/hello.html
 
 # Verify existing versions are preserved
 $ must-mirror target/ghpages/1.0.0/hello.html expected/hello.html
-$ must-mirror target/ghpages/2.0.0/hello.html expected/hello.html
+$ must-mirror target/ghpages/2.0.0-SNAPSHOT/hello.html expected/hello.html

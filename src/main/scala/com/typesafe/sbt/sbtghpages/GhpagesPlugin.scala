@@ -26,6 +26,7 @@ object GhpagesPlugin extends AutoPlugin {
   def ghpagesGlobalSettings: Seq[Setting[_]] = Seq(
     ghpagesBranch := "gh-pages",
     ghpagesKeepVersions := false,
+    ghpagesCopyLatestVersionAtRoot := false,
     ghpagesNoJekyll := true
   )
 
@@ -47,11 +48,17 @@ object GhpagesPlugin extends AutoPlugin {
     excludeFilter in ghpagesCleanSite := NothingFilter
   )
 
+  private def isSnapshot = Def.task(version.value.toLowerCase.contains("snapshot"))
+
   private def ghpagesPrivateMappingsTask = Def.task {
-    val makeSiteMappings = (mappings in SitePlugin.autoImport.makeSite).value
+    val defaultMappings = (mappings in SitePlugin.autoImport.makeSite).value
     val updatedMappings =
-      if (ghpagesKeepVersions.value) makeSiteMappings map { case (file, target) => (file, version.value + "/" + target) }
-      else makeSiteMappings
+      if (ghpagesKeepVersions.value) {
+        val mappingsWithVersionDir = defaultMappings map { case (file, target) => (file, version.value + "/" + target) }
+        if (ghpagesCopyLatestVersionAtRoot.value && !isSnapshot.value) defaultMappings ++ mappingsWithVersionDir
+        else mappingsWithVersionDir
+      }
+      else defaultMappings
     updatedMappings
   }
 

@@ -154,16 +154,6 @@ sbt-ghpages will only delete files which are matched by the FileFilter specified
 For example, to prevent sbt-ghpages from deleting the "CNAME" file located at the root of your site, and any file
 named "versions.html", add the following to your build.sbt:
 
-## Maintaining Old Versions
-By setting just `ghpagesKeepVersions` flag, you can maintain history of all your old and current versions of site/documents.
-Behind the scenes, this flag plays two important roles:
-1. Set's the `includeFilter in ghpagesCleanSite` to include all the files from current versions. 
-    (That means, if you publish same version again, old content from that version will be replaced by new content)
-2. While publishing site to gh-pages, new directory with current version's name is created and all the site contents will be
-    copied to that directory
-    
-Avoid setting `includeFilter in ghpagesCleanSite` explicitly to protect old files as this is set by plugin to protect files when `ghpagesKeepVersions := true`
-
 ```scala
 excludeFilter in ghpagesCleanSite :=
   new FileFilter{
@@ -173,6 +163,23 @@ excludeFilter in ghpagesCleanSite :=
 
 For more information on creating more complex filters, please refer to the [sbt FileFilter documentation](http://www.scala-sbt.org/1.x/docs/Paths.html#File+Filters).
 
+## Maintaining Old Versions
+By setting `ghpagesKeepVersions` flag, you can maintain history of all your old and current versions of site/document.
+Behind the scenes, this flag does following things:
+1. Default site mappings gets prefixed with `version.value + "/"`
+1. Set's the `includeFilter in ghpagesCleanSite` to include all the files from current versions. 
+    (That means, if you publish same version again, old content from that version will be replaced by new content)
+1. While publishing site to `gh-pages`, new directory with current version's name gets created and all the site content gets
+    copied to that directory
+    
+## Automatic Pointing To The Latest Version
+Set `ghpagesCopyLatestVersionAtRoot` flag to automatically point site to the latest version (i.e. last published version).
+In this case, site content gets copied to root directory along with their version specific directory.
+
+**Note:**
+1. Avoid setting `includeFilter in ghpagesCleanSite` explicitly to protect old files as this is set by a plugin to protect files when `ghpagesKeepVersions := true`
+1. `ghpagesCopyLatestVersionAtRoot` taken into consideration only when `ghpagesKeepVersions := true`
+1. `*-SNAPSHOT` version (i.e. `version.toLowerCase.contains("snapshot")`) does not get copied to top-level even when `ghpagesCopyLatestVersionAtRoot` is set
 
 ## LICENSE ##
 
