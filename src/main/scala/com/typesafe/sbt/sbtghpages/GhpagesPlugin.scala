@@ -6,6 +6,7 @@ import Keys.{mappings, _}
 import com.typesafe.sbt.SbtGit.GitKeys
 import com.typesafe.sbt.git.GitRunner
 import GitKeys.{gitBranch, gitRemoteRepo}
+import com.typesafe.sbt.sbtghpages.GhpagesPlugin.isSnapshot
 import com.typesafe.sbt.site.SitePlugin
 
 import scala.util.control.NonFatal
@@ -48,14 +49,15 @@ object GhpagesPlugin extends AutoPlugin {
     excludeFilter in ghpagesCleanSite := NothingFilter
   )
 
-  private def isSnapshot = Def.taskDyn(Def.task(version.value.toLowerCase.contains("snapshot")))
+  private def isSnapshot = Def.task(version.value.toLowerCase.contains("snapshot"))
 
   private def ghpagesPrivateMappingsTask = Def.task {
     val defaultMappings = (mappings in SitePlugin.autoImport.makeSite).value
+    val snapshot = isSnapshot.value
     val updatedMappings =
       if (ghpagesKeepVersions.value) {
         val mappingsWithVersionDir = defaultMappings map { case (file, target) => (file, version.value + "/" + target) }
-        if (ghpagesCopyLatestVersionAtRoot.value && !isSnapshot.value) defaultMappings ++ mappingsWithVersionDir
+        if (ghpagesCopyLatestVersionAtRoot.value && !snapshot) defaultMappings ++ mappingsWithVersionDir
         else mappingsWithVersionDir
       }
       else defaultMappings
