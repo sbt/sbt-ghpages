@@ -48,7 +48,7 @@ object GhpagesPlugin extends AutoPlugin {
     excludeFilter in ghpagesCleanSite := NothingFilter
   )
 
-  private def isSnapshot = Def.task(version.value.toLowerCase.contains("snapshot"))
+  private def isSnapshot = Def.taskDyn(Def.task(version.value.toLowerCase.contains("snapshot")))
 
   private def ghpagesPrivateMappingsTask = Def.task {
     val defaultMappings = (mappings in SitePlugin.autoImport.makeSite).value
