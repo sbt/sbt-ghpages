@@ -26,4 +26,4 @@ version := "0.6.4-SNAPSHOT"
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "0.9.3")
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "1.3.3")
+addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "1.4.1")
