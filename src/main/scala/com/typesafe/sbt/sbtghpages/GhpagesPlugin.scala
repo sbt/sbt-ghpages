@@ -88,7 +88,7 @@ object GhpagesPlugin extends AutoPlugin {
       val git = GitKeys.gitRunner.value
       val repo = ghpagesSynchLocal.value
       val s = streams.value.log
-      git("add", ".")(repo, s)
+      git("add", "-f", ".")(repo, s)
       try {
         val commit = "commit" +: ghpagesCommitOptions.value
         git(commit: _*)(repo, s)
