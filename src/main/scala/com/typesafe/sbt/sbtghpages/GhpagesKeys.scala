@@ -5,6 +5,8 @@ import sbt._
 import Keys._
 
 trait GhpagesKeys {
+  lazy val ghpagesKeepVersions = settingKey[Boolean]("If this flag is set, ghpages will not clean existing versions of site and make sure that new site is pushed inside current version directory")
+  lazy val ghpagesCopyLatestVersionAtRoot = settingKey[Boolean]("If this flag is set, ghpages will keep a copy of site at root level directory so that site will always point to latest version. Note: Snapshots versions are not copied to root")
   lazy val ghpagesCommitOptions = settingKey[Seq[String]]("commit options")
   lazy val ghpagesRepository = settingKey[File]("sandbox environment where git project ghpages branch is checked out.")
   lazy val ghpagesBranch = settingKey[String]("Name of the git branch in which to store ghpages content. Defaults to gh-pages.")
