@@ -11,7 +11,7 @@ trait GhpagesKeys {
   lazy val ghpagesNoJekyll = settingKey[Boolean]("If this flag is set, ghpages will automatically generate a .nojekyll file to prevent github from running jekyll on pushed sites.")
   lazy val ghpagesUpdatedRepository = taskKey[File]("Updates the local ghpages branch on the sandbox repository.")
   // Note:  These are *only* here in the event someone wants to completely bypass the sbt-site plugin.
-  lazy val ghpagesPrivateMappings = mappings in ghpagesSynchLocal
+  lazy val ghpagesPrivateMappings = ghpagesSynchLocal / mappings
   lazy val ghpagesSynchLocal = taskKey[File]("Copies the locally generated site into the local ghpages repository.")
   lazy val ghpagesCleanSite = taskKey[Unit]("Cleans the staged repository for ghpages branch.")
   lazy val ghpagesPushSite = taskKey[Unit]("Pushes a generated site into the ghpages branch.  Will not clean the branch unless you run clean-site first.")

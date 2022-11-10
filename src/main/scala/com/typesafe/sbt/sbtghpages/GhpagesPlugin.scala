@@ -35,14 +35,14 @@ object GhpagesPlugin extends AutoPlugin {
         Hash.toHex(Hash.apply(sbt.Keys.thisProjectRef.value.build.toASCIIString))
       file(System.getProperty("user.home")) / ".sbt" / "ghpages" / buildHash /  organization.value / name.value
     },
-    gitBranch in ghpagesUpdatedRepository := gitBranch.?.value getOrElse Some(ghpagesBranch.value),
-    ghpagesUpdatedRepository := updatedRepo(ghpagesRepository, gitRemoteRepo, gitBranch in ghpagesUpdatedRepository).value,
+    ghpagesUpdatedRepository / gitBranch := gitBranch.?.value getOrElse Some(ghpagesBranch.value),
+    ghpagesUpdatedRepository := updatedRepo(ghpagesRepository, gitRemoteRepo, ghpagesUpdatedRepository / gitBranch).value,
     ghpagesPushSite := pushSiteTask.value,
-    ghpagesPrivateMappings := (mappings in SitePlugin.autoImport.makeSite).value,
+    ghpagesPrivateMappings := (SitePlugin.autoImport.makeSite / mappings).value,
     ghpagesSynchLocal := synchLocalTask.value,
     ghpagesCleanSite := cleanSiteTask.value,
-    includeFilter in ghpagesCleanSite := AllPassFilter,
-    excludeFilter in ghpagesCleanSite := NothingFilter
+    ghpagesCleanSite / includeFilter := AllPassFilter,
+    ghpagesCleanSite / excludeFilter := NothingFilter
   )
 
   private def updatedRepo(repo: SettingKey[File], remote: SettingKey[String], branch: SettingKey[Option[String]]) =
@@ -59,8 +59,8 @@ object GhpagesPlugin extends AutoPlugin {
       val mappings = ghpagesPrivateMappings.value
       val repo = ghpagesUpdatedRepository.value
       val s = streams.value
-      val incl = (includeFilter in ghpagesCleanSite).value
-      val excl = (excludeFilter in ghpagesCleanSite).value
+      val incl = (ghpagesCleanSite / includeFilter).value
+      val excl = (ghpagesCleanSite / excludeFilter).value
       // TODO - an sbt.Synch with cache of previous mappings to make this more efficient. */
       val betterMappings = mappings map { case (file, target) => (file, repo / target) }
       // First, remove 'stale' files.
@@ -73,7 +73,7 @@ object GhpagesPlugin extends AutoPlugin {
 
   private def cleanSiteTask =
     Def.task {
-      cleanSiteForRealz(ghpagesUpdatedRepository.value, GitKeys.gitRunner.value, streams.value, (includeFilter in ghpagesCleanSite).value, (excludeFilter in ghpagesCleanSite).value)
+      cleanSiteForRealz(ghpagesUpdatedRepository.value, GitKeys.gitRunner.value, streams.value, (ghpagesCleanSite / includeFilter).value, (ghpagesCleanSite / excludeFilter).value)
     }
   private def cleanSiteForRealz(dir: File, git: GitRunner, s: TaskStreams, incl: FileFilter, excl: FileFilter): Unit = {
     val toClean = IO.listFiles(dir)
