@@ -20,7 +20,7 @@ crossSbtVersions := Seq("1.2.8")
 
 name := "sbt-ghpages"
 
-organization := "com.typesafe.sbt"
+organization := "com.github.sbt"
 
 version := "0.6.4-SNAPSHOT"
 

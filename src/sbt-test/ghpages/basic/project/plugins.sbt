@@ -1,1 +1,1 @@
-addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % sys.props("plugin.version"))
+addSbtPlugin("com.github.sbt" % "sbt-ghpages" % sys.props("plugin.version"))

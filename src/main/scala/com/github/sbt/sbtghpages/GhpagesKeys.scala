@@ -1,4 +1,4 @@
-package com.typesafe.sbt
+package com.github.sbt
 package sbtghpages
 
 import sbt._
