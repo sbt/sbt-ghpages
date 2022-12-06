@@ -14,10 +14,6 @@ scriptedLaunchOpts ++= {
   )
 }
 
-// Don't update to sbt 1.3.x or later
-// https://github.com/sbt/sbt/issues/5049
-crossSbtVersions := Seq("1.2.8")
-
 name := "sbt-ghpages"
 
 organization := "com.github.sbt"
