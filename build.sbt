@@ -27,3 +27,17 @@ version := "0.6.4-SNAPSHOT"
 addSbtPlugin("com.github.sbt" % "sbt-git" % "2.0.1")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "1.4.1")
+
+homepage := Some(url("https://github.com/sbt/sbt-ghpages"))
+
+licenses := Seq("BSD-style" -> url("https://raw.githubusercontent.com/sbt/sbt-ghpages/master/LICENSE"))
+
+pomExtra := (
+  <developers>
+    <developer>
+      <id>xuwei-k</id>
+      <name>Kenji Yoshida</name>
+      <url>https://github.com/xuwei-k</url>
+    </developer>
+  </developers>
+)
