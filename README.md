@@ -11,9 +11,9 @@ from sbt.
 Start by setting up `sbt-site`, and once you have it locally generating a site
 and/or Scaladoc to your liking, `sbt-ghpages` will integrate to publish it on
 the web with GitHub Pages where it will be served at
-`http://{your username}.github.io/{your project}/`.
+`https://{your username}.github.io/{your project}/`.
 
-[sbt-site plugin]: http://github.com/sbt/sbt-site
+[sbt-site plugin]: https://github.com/sbt/sbt-site
 
 
 ## Adding the plugin to your project ##
@@ -29,7 +29,7 @@ addSbtPlugin("com.github.sbt" % "sbt-ghpages" % "0.8.0")
 Then in your `build.sbt` file, simply enable the GhpagesPlugin via an
 `enablePlugins` statement for your project, and specify the location of
 your github repository (for more information on enabling and disabling sbt plugins,
-see the [sbt plugin documentation](http://www.scala-sbt.org/1.x/docs/Using-Plugins.html#Enabling+and+disabling+auto+plugins)):
+see the [sbt plugin documentation](https://www.scala-sbt.org/1.x/docs/Using-Plugins.html#Enabling+and+disabling+auto+plugins)):
 
 ```scala
 enablePlugins(GhpagesPlugin)
@@ -105,13 +105,13 @@ enablePlugins(SiteScaladocPlugin)
 
 After using `ghpagesPushSite` you should find your Scaladoc at:
 
-`http://{your username}.github.io/{your project}/latest/api`
+`https://{your username}.github.io/{your project}/latest/api`
 
 If you aren't publishing any other content to the root of your project site, it
 is recommended that you add a redirect to provide a better experience for users
 visiting it. You can do this by creating a page in `src/site/index.html` that
 automatically redirects to either the above link, or even better, to a good
-starting point in your documentation. Otherwise, people visiting `http://{your
+starting point in your documentation. Otherwise, people visiting `https://{your
 username}.github.io/{your project}` will just get a 404.
 
 Here's an example `src/site/index.html` you can use as a starting point:
@@ -159,7 +159,7 @@ excludeFilter in ghpagesCleanSite :=
   } || "versions.html"
 ```
 
-For more information on creating more complex filters, please refer to the [sbt FileFilter documentation](http://www.scala-sbt.org/1.x/docs/Paths.html#File+Filters).
+For more information on creating more complex filters, please refer to the [sbt FileFilter documentation](https://www.scala-sbt.org/1.x/docs/Paths.html#File+Filters).
 
 
 ## LICENSE ##
