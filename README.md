@@ -23,7 +23,7 @@ the web with GitHub Pages where it will be served at
 Create a `project/ghpages.sbt` file that looks like the following:
 
 ```scala
-addSbtPlugin("com.github.sbt" % "sbt-ghpages" % "0.8.0")
+addSbtPlugin("com.github.sbt" % "sbt-ghpages" % "0.9.0")
 ```
 
 Then in your `build.sbt` file, simply enable the GhpagesPlugin via an
