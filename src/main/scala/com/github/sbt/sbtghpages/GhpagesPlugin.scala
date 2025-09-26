@@ -14,20 +14,20 @@ import scala.util.control.NonFatal
 object GhpagesPlugin extends AutoPlugin {
   override val trigger: PluginTrigger = noTrigger
   override val  requires: Plugins = SitePlugin && GitPlugin
-  override lazy val globalSettings: Seq[Setting[_]] = ghpagesGlobalSettings
-  override lazy val  projectSettings: Seq[Setting[_]] = ghpagesProjectSettings
+  override lazy val globalSettings: Seq[Setting[?]] = ghpagesGlobalSettings
+  override lazy val  projectSettings: Seq[Setting[?]] = ghpagesProjectSettings
 
   object autoImport extends GhpagesKeys
   import autoImport._
 
   // TODO - Add some sort of locking to the repository so only one thread accesses it at a time...
 
-  def ghpagesGlobalSettings: Seq[Setting[_]] = Seq(
+  def ghpagesGlobalSettings: Seq[Setting[?]] = Seq(
     ghpagesBranch := "gh-pages",
     ghpagesNoJekyll := true
   )
 
-  def ghpagesProjectSettings: Seq[Setting[_]] = Seq(
+  def ghpagesProjectSettings: Seq[Setting[?]] = Seq(
     //example: gitRemoteRepo := "git@github.com:jsuereth/scala-arm.git",
     ghpagesCommitOptions := Seq("-m", commitMessage),
     ghpagesRepository := {
@@ -77,9 +77,9 @@ object GhpagesPlugin extends AutoPlugin {
     }
   private def cleanSiteForRealz(dir: File, git: GitRunner, s: TaskStreams, incl: FileFilter, excl: FileFilter): Unit = {
     val toClean = IO.listFiles(dir)
-        .filter(f ⇒ f.getName != ".git" && incl.accept(f) && !excl.accept(f)).map(_.getAbsolutePath).toList
+        .filter(f => f.getName != ".git" && incl.accept(f) && !excl.accept(f)).map(_.getAbsolutePath).toList
     if(!toClean.isEmpty)
-      git(("rm" :: "-r" :: "-f" :: "--ignore-unmatch" :: toClean) :_*)(dir, s.log)
+      git(("rm" :: "-r" :: "-f" :: "--ignore-unmatch" :: toClean)*)(dir, s.log)
     ()
   }
 
@@ -92,7 +92,7 @@ object GhpagesPlugin extends AutoPlugin {
       git("add", ".")(repo, s)
       try {
         val commit = "commit" +: ghpagesCommitOptions.value
-        git(commit: _*)(repo, s)
+        git(commit*)(repo, s)
       } catch {
         case NonFatal(e) =>
           s.info(e.toString)
