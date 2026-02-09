@@ -25,5 +25,5 @@ jobs:
         java-version: ${{ matrix.java }}
         distribution: temurin
     - uses: sbt/setup-sbt@v1
-    - uses: coursier/cache-action@bebeeb0e6f48ebad66d3783946588ecf43114433 # v6.4.8
+    - uses: coursier/cache-action@c5ca79321d170b8a18c288d9cadc2a6037166d0f # v8.0.0
     - run: sbt -v $(if [[ "${{matrix.sbt_version}}" != "" ]] ; then echo "^^${{matrix.sbt_version}}" ; fi) test scripted
