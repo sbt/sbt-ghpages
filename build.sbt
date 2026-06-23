@@ -18,7 +18,9 @@ name := "sbt-ghpages"
 
 organization := "com.github.sbt"
 
-addSbtPlugin("com.github.sbt" % "sbt-git" % "2.0.1")
+libraryDependencies += "org.scala-lang.modules" %% "scala-collection-compat" % "2.13.0"
+
+addSbtPlugin("com.github.sbt" % "sbt-git" % "2.1.0")
 
 addSbtPlugin("com.github.sbt" % "sbt-site" % "1.7.0")
 
