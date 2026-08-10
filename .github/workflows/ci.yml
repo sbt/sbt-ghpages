@@ -23,3 +23,5 @@ jobs:
         cache: sbt
     - uses: sbt/setup-sbt@v1
     - run: sbt -v test scripted
+    - run: sbt -v "++ 3.x" test scripted
+      if: matrix.java != 8

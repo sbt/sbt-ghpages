@@ -22,6 +22,8 @@ addSbtPlugin("com.github.sbt" % "sbt-git" % "2.1.0")
 
 addSbtPlugin("com.github.sbt" % "sbt-site" % "1.8.0")
 
+crossScalaVersions += "3.8.4"
+
 scalacOptions ++= {
   scalaBinaryVersion.value match {
     case "2.12" => Seq("-deprecation", "-Xsource:3", "-release", "8")

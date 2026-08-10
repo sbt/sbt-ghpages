@@ -9,6 +9,8 @@ import com.github.sbt.git.GitRunner
 import GitKeys.{gitBranch, gitRemoteRepo}
 import com.typesafe.sbt.site.SitePlugin
 import scala.util.control.NonFatal
+import sbtcompat.PluginCompat
+import xsbti.FileConverter
 
 // Plugin to make use of github pages.
 object GhpagesPlugin extends AutoPlugin {
@@ -61,8 +63,9 @@ object GhpagesPlugin extends AutoPlugin {
       val s = streams.value
       val incl = (ghpagesCleanSite / includeFilter).value
       val excl = (ghpagesCleanSite / excludeFilter).value
+      implicit val converter: FileConverter = fileConverter.value
       // TODO - an sbt.Synch with cache of previous mappings to make this more efficient. */
-      val betterMappings = mappings map { case (file, target) => (file, repo / target) }
+      val betterMappings = mappings map { case (file, target) => (PluginCompat.toFile(file), repo / target) }
       // First, remove 'stale' files.
       cleanSiteForRealz(repo, GitKeys.gitRunner.value, s, incl, excl)
       // Now copy files.
