@@ -49,7 +49,7 @@ description := "GitHub Pages support for sbt"
 
 homepage := Some(url("https://github.com/sbt/sbt-ghpages"))
 
-licenses := Seq("BSD-style" -> url("https://raw.githubusercontent.com/sbt/sbt-ghpages/master/LICENSE"))
+licenses := Seq("BSD-style" -> url("https://raw.githubusercontent.com/sbt/sbt-ghpages/main/LICENSE"))
 
 developers := List(
   Developer(
