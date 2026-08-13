@@ -23,7 +23,7 @@ the web with GitHub Pages where it will be served at
 Create a `project/ghpages.sbt` file that looks like the following:
 
 ```scala
-addSbtPlugin("com.github.sbt" % "sbt-ghpages" % "0.9.0")
+addSbtPlugin("com.github.sbt" % "sbt-ghpages" % "0.10.0")
 ```
 
 Then in your `build.sbt` file, simply enable the GhpagesPlugin via an
@@ -44,36 +44,40 @@ sbt-ghpages provides the following optional setting keys for use in your `build.
 - `ghpagesNoJekyll` - If set to true will cause a .nojekyll file to be generated, to prevent GitHub from running Jekyll on pushed sites.
 - `ghpagesBranch` - Name of the branch in which to store static files. Defaults to gh-pages.
 
+## Setting up GitHub Pages
 
-## Initializing the gh-pages branch ##
+GitHub Pages can use either a fresh repository or a branch in an existing repository to host your site.
 
-GitHub Pages works by processing the contents of a special branch in your
-project repository named `gh-pages` and then serving your static files.
+### Using a fresh repository
 
-Before using `sbt-ghpages`, you must [create the `gh-pages` branch in your
-repository][create branch] and push the branch to GitHub. The quick steps are:
+See [Creating a repository for your site](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site#creating-a-repository-for-your-site).
 
-    # Using a fresh, temporary clone is safest for this procedure
-    $ pushd /tmp
-    $ git clone git@github.com:youruser/yourproject.git
-    $ cd yourproject
+### Creating an orphan gh-pages branch
 
-    # Create branch with no history or content
-    $ git checkout --orphan gh-pages
-    $ git rm -rf .
+Here are the steps to create a blank branch named `gh-pages`:
 
-    # Establish the branch existence
-    $ git commit --allow-empty -m "Initialize gh-pages branch"
-    $ git push origin gh-pages
+```bash
+# Using a fresh, temporary clone is safest for this procedure
+$ pushd /tmp
+$ git clone git@github.com:youruser/yourproject.git
+$ cd yourproject
 
-    # Return to original working copy clone, we're finished with the /tmp one
-    $ popd
-    $ rm -rf /tmp/yourproject
+# Create branch with no history or content
+$ git checkout --orphan gh-pages
+$ git rm -rf .
+
+# Establish the branch existence
+$ git commit --allow-empty -m "Initialize gh-pages branch"
+$ git push origin gh-pages
+
+# Return to original working copy clone, we're finished with the /tmp one
+$ popd
+$ rm -rf /tmp/yourproject
+```
+
+See [Publishing from a branch](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-from-a-branch).
 
 Now that this is done, you can begin using the plugin with sbt.
-
-[create branch]: https://help.github.com/articles/creating-project-pages-using-the-command-line/
-
 
 ## Publishing your site ##
 
