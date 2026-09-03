@@ -22,7 +22,7 @@ addSbtPlugin("com.github.sbt" % "sbt-git" % "2.1.0")
 
 addSbtPlugin("com.github.sbt" % "sbt-site" % "1.8.0")
 
-crossScalaVersions += "3.8.4"
+crossScalaVersions += "3.9.0"
 
 scalacOptions ++= {
   scalaBinaryVersion.value match {
