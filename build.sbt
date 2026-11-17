@@ -1,4 +1,4 @@
-def sbt2 = "2.0.10"
+def sbt2 = "2.1.0"
 
 enablePlugins(SbtPlugin)
 
@@ -24,7 +24,8 @@ addSbtPlugin("com.github.sbt" % "sbt-git" % "2.2.0")
 
 addSbtPlugin("com.github.sbt" % "sbt-site" % "1.8.0")
 
-crossScalaVersions += scala_version_from_sbt_version.ScalaVersionFromSbtVersion(sbt2)
+scalaVersion := "2.12.21"
+crossScalaVersions := Seq("2.12.21", "3.9.0")
 
 scalacOptions ++= {
   scalaBinaryVersion.value match {
