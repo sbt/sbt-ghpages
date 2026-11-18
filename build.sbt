@@ -20,7 +20,7 @@ name := "sbt-ghpages"
 
 organization := "com.github.sbt"
 
-addSbtPlugin("com.github.sbt" % "sbt-git" % "2.2.0")
+addSbtPlugin("com.github.sbt" % "sbt-git" % "3.0.0")
 
 addSbtPlugin("com.github.sbt" % "sbt-site" % "1.8.0")
 
