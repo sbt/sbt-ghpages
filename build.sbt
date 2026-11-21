@@ -1,4 +1,4 @@
-def sbt2 = "2.0.10"
+def sbt2 = "2.1.0"
 
 enablePlugins(SbtPlugin)
 
